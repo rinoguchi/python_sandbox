@@ -27,23 +27,23 @@ class Cluster:
 
 
 class ClusterPool:
-    def __init__(self):
-        self.clusters = Manager().list()  # インスタンス変数にマネージャーオブジェクトを追加
+    def __init__(self, manager: Manager):
+        self.clusters = manager.list()  # インスタンス変数にサーバプロセスで管理するListを保持
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
-        self.clusters[:] = []  # withブロックを抜ける時にマネージャオブジェクトを空に
+        self.clusters[:] = []  # withブロックを抜ける時にサーバプロセスのListを空に
 
     def pop_or_create_cluster(self) -> Cluster:
         try:
-            return self.clusters.pop()  # popしてマネージャオブジェクトから削除
+            return self.clusters.pop()  # popしてサーバプロセスのListから削除
         except IndexError:
             return Cluster()
 
     def append_cluster(self, cluster: Cluster):
-        self.clusters.append(cluster)  # 最後にマネージャオブジェクトに追加
+        self.clusters.append(cluster)  # 最後にサーバプロセスのListに追加
 
 
 def parallel_func(num: int, cluster_pool: ClusterPool) -> int:
@@ -56,19 +56,20 @@ def parallel_func(num: int, cluster_pool: ClusterPool) -> int:
 def main():
     nums: List[int] = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
-    with ClusterPool() as cluster_pool:
-        future_list: List[Future] = []
-        squared_nums: List[int] = []
-        with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            for num in nums:
-                future: Future = executor.submit(
-                    parallel_func,
-                    num=num,
-                    cluster_pool=cluster_pool,
-                )
-                future_list.append(future)
-            for future in futures.as_completed(fs=future_list):
-                squared_nums.append(future.result())
+    with Manager() as manager:
+        with ClusterPool(manager) as cluster_pool:
+            future_list: List[Future] = []
+            squared_nums: List[int] = []
+            with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                for num in nums:
+                    future: Future = executor.submit(
+                        parallel_func,
+                        num=num,
+                        cluster_pool=cluster_pool,
+                    )
+                    future_list.append(future)
+                for future in futures.as_completed(fs=future_list):
+                    squared_nums.append(future.result())
 
         print(f'squared_nums: {squared_nums}')
 
