@@ -58,7 +58,7 @@ class ClusterPool:
         finally:
             self.lock.release()
 
-    def return_cluster(self, cluster: Cluster):
+    def release_cluster(self, cluster: Cluster):
         cluster.is_using = False
         self.clusters[self.clusters.index(cluster)] = cluster
 
@@ -66,7 +66,7 @@ class ClusterPool:
 def parallel_func(num: int, cluster_pool: ClusterPool) -> int:
     cluster: Cluster = cluster_pool.get_or_create_cluster()
     result: int = cluster.submit_pyspark_job(num)
-    cluster_pool.return_cluster(cluster)
+    cluster_pool.release_cluster(cluster)
     return result
 
 
