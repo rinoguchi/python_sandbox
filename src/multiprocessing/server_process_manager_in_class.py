@@ -4,6 +4,7 @@
 独自クラス内でマネージャーオプジェクトを管理するケースを試してみる
 """
 from multiprocessing import Manager
+from multiprocessing.managers import SyncManager
 from concurrent import futures
 from concurrent.futures import Future, ProcessPoolExecutor
 from typing import List
@@ -27,7 +28,7 @@ class Cluster:
 
 
 class ClusterPool:
-    def __init__(self, manager: Manager):
+    def __init__(self, manager: SyncManager):
         self.clusters = manager.list()  # インスタンス変数にサーバプロセスで管理するListを保持
 
     def __enter__(self):
