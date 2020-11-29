@@ -8,6 +8,7 @@ authors = ["rinoguchi <inogu1979@gmail.com>"]
 python = "^3.9"
 pyppeteer = "^0.2.2"
 requests = "^2.25.0"
+beautifulsoup4 = "^4.9.3"
 
 [tool.poetry.dev-dependencies]
 
