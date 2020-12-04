@@ -45,18 +45,18 @@ def stop_web_server(port_num: int):
     requests.post(f'http://localhost:{port_num}/kill_server')
 
 
-class ScrapingBaseTestCase(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
     port_num: int = 9000  # default値。継承先で上書きして利用する
 
     @classmethod
     def setUpClass(cls):
-        print('ScrapingBaseTestCase.setUpClass started.')
+        print('BaseTestCase.setUpClass started.')
         start_web_server(cls.port_num, cls.__name__)
         time.sleep(1)  # Webサーバが立ち上がるのを1秒待機
-        print('ScrapingBaseTestCase.setUpClass finished.')
+        print('BaseTestCase.setUpClass finished.')
 
     @classmethod
     def tearDownClass(cls):
-        print('ScrapingBaseTestCase.tearDownClass started.')
+        print('BaseTestCase.tearDownClass started.')
         stop_web_server(cls.port_num)
-        print('ScrapingBaseTestCase.tearDownClass finished.')
+        print('BaseTestCase.tearDownClass finished.')

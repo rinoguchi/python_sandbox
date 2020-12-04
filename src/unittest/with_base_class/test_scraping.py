@@ -1,11 +1,11 @@
 import unittest
 import requests
 from requests import Response
-from scraping_base_test_case import ScrapingBaseTestCase  # type: ignore
+from base_test_case import BaseTestCase  # type: ignore
 from bs4 import BeautifulSoup
 
 
-class TestScraping(ScrapingBaseTestCase):
+class TestScraping(BaseTestCase):
 
     @classmethod
     def setUpClass(cls):
