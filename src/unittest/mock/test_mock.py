@@ -45,7 +45,7 @@ class TestMock(unittest.TestCase):
 
     @patch.object(real, 'get_doubled_int', return_value=999)
     def test_module_func_mock_1(self, mock1: MagicMock):
-        """モジュール直下に定義されたfunctionをモックする"""
+        """モジュール直下に定義されたpublic functionをモックする"""
         self.assertEqual(real.get_doubled_int(11), 999)
         mock1.assert_called_once_with(11)
 
@@ -54,6 +54,18 @@ class TestMock(unittest.TestCase):
         """モジュール直下に定義されたfunctionをモックする"""
         self.assertEqual(real.get_doubled_int(11), 999)
         mock1.assert_called_once_with(11)
+
+    @patch.object(real, '__get_doubled_int', return_value=999)
+    def test_module_func_mock_3(self, mock1: MagicMock):
+        """モジュール直下に定義されたprivate functionをモックする"""
+        self.assertEqual(real.wrapper__get_doubled_int(11), 999)
+        mock1.assert_called_once_with(11)
+
+    @patch.object(KeyHolder, '_KeyHolder__private_method', return_value='mocked_method')
+    def test_class_private_func(self, mock1: MagicMock):
+        """クラスに定義されたprivate functionをモックする"""
+        self.assertEqual(KeyHolder().get_private_method(), 'mocked_method')
+        mock1.assert_called_once()
 
 
 if __name__ == '__main__':
